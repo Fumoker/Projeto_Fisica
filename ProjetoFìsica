@@ -1,0 +1,88 @@
+# -*- coding: cp1252 -*-
+from visual import *
+from visual.graph import *
+gra=gcurve(color=color.cyan)
+
+#--------------------------------------------------------
+#Vista em scene:
+scene = display(title = "Projeto de Física Colisao",
+                    x=0,y=0, width=800,height=600,
+                    range=10,background=color.white,
+                    center = (10,1.15,0))
+
+#---------------------------------------------------------
+#Contruir os elementos:
+#POSICAO E TAMANHO DA ESTRADA
+
+floor = box(pos=(0,0,0), size=(100,0.25,10))
+
+#POSICAO E TAMANHO DA PAREDE
+wall = box(pos=(40,2.4,0), size=(1,5,10))
+
+#---------------------------------------------------------
+#CARRO
+roda1 = cylinder(pos=(-1,1.2,2), axis=(0,0,1), radius=1)
+roda1.color = (0,0,1)            
+roda2 = cylinder(pos=(4,1.2,2), axis=(0,0,1), radius=1)
+roda2.color = (0,0,1)
+roda3 = cylinder(pos=(-1,1.2,-3), axis=(0,0,1), radius=1)
+roda3.color = (0,0,1)
+roda4 = cylinder(pos=(4,1.2,-3), axis=(0,0,1), radius=1)
+roda4.color = (0,0,1)
+carrocaria = box(pos=(2,2,0), size=(9,2,4))
+carrocaria.color = (0,43,56)
+#---------------------------------------------------------
+#Constantes
+
+t = 0
+dt = 0.1
+carrocaria.m = 100
+wall.m = 5000 
+v = 6 #m/s
+g=9.8
+
+k=100000 #spring constant for the interaction
+sk=0.2
+
+#---------------------------------------------------------
+#Adicionar Movimento
+
+roda1.v = vector(1,0,0)
+roda2.v = vector(1,0,0)
+roda3.v = vector(1,0,0)
+roda4.v = vector(1,0,0)
+carrocaria.v = vector(1,0,0)
+
+carrocaria.p = vector(v,0,0)*carrocaria.m
+wall.p=vector(0,0,0)
+
+#---------------------------------------------------------
+#Condição de paragem
+
+while carrocaria.pos.x<=36:
+    rate(100)
+    roda1.pos=roda1.pos+roda1.v*dt
+    roda2.pos=roda2.pos+roda2.v*dt
+    roda3.pos=roda3.pos+roda3.v*dt
+    roda4.pos=roda4.pos+roda4.v*dt
+    carrocaria.pos=carrocaria.pos+carrocaria.v*dt  #x=xo+vot
+    #carrocaria.pos=carrocaria.pos+v*dt+5**dt
+#---------------------------------------------------------
+#Forças
+    F=vector(0,0,0)
+    if carrocaria.pos.x>=36:
+        F=k*(sk-mag(carrocaria.pos-wall.pos))*norm(wall.pos-carrocaria.pos)
+        Ep=carrocaria.m*g*carrocaria.pos.y
+        Ec=0.5*carrocaria.m*v**2
+        Emec=Ep+Ec
+        dt=0.001
+    else:
+        dt=0.1
+    t=t+dt
+    gra.plot(pos=(t,mag(F)))
+    #gra.plot(pos=(t,mag(Ec))
+    #gra.plot(pos=(t,mag(Ep))
+    #gra.plot(pos=(t,mag(Emec))
+
+#---------------------------------------------------------
+
